@@ -20,21 +20,31 @@ import data.InventoryContract.InventoryEntry;
 /**
  * Allows user to create a new inventory item or edit an existing one.
  */
-public class EditorActivity extends AppCompatActivity{
+public class EditorActivity extends AppCompatActivity {
 
-    /** EditText field to enter the product name **/
+    /**
+     * EditText field to enter the product name
+     **/
     private EditText mProductNameEditText;
 
-    /** EditText field to enter the supplier name **/
+    /**
+     * EditText field to enter the supplier name
+     **/
     private EditText mSupplierNameEditText;
 
-    /** EditText field to enter the supplier phone number **/
+    /**
+     * EditText field to enter the supplier phone number
+     **/
     private EditText mSupplierPhoneNumberEditText;
 
-    /** EditText field to enter the product price **/
+    /**
+     * EditText field to enter the product price
+     **/
     private EditText mProductPriceEditText;
 
-    /** EditText field to enter the quantity of the product in the inventory **/
+    /**
+     * EditText field to enter the quantity of the product in the inventory
+     **/
     private EditText mQuantityEditText;
 
     @Override
@@ -49,7 +59,7 @@ public class EditorActivity extends AppCompatActivity{
         mQuantityEditText = findViewById(R.id.edit_quantity);
     }
 
-    private void insertItem()   {
+    private void insertItem() {
 
         String productNameString = mProductNameEditText.getText().toString().trim();
         String supplierNameString = mSupplierNameEditText.getText().toString().trim();
@@ -74,7 +84,7 @@ public class EditorActivity extends AppCompatActivity{
 
         long newRowId = db.insert(InventoryEntry.TABLE_NAME, null, values);
         Log.v("Editor Activity", "New Row ID " + newRowId);
-        if (newRowId == -1)  {
+        if (newRowId == -1) {
             Toast toastError = Toast.makeText(this, "Error with saving item!", Toast.LENGTH_LONG);
             toastError.show();
         } else {

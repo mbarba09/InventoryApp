@@ -12,7 +12,7 @@ public final class InventoryContract {
         public static final String COLUMN_PRODUCT_NAME = "product";
         public static final String COLUMN_SUPPLIER = "supplierName";
         public static final String COLUMN_SUPPLIER_NUMBER = "supplierPhoneNumber";
-        public static final String COLUMN_PRICE = "price" ;
+        public static final String COLUMN_PRICE = "price";
         public static final String COLUMN_QUANTITY = "quantity";
     }
 }
