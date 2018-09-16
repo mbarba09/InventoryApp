@@ -63,6 +63,5 @@ public final class InventoryContract {
         public static final String COLUMN_PRICE = "price";
         public static final String COLUMN_QUANTITY = "quantity";
 
-        public static boolean
     }
 }
