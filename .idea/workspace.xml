@@ -7,7 +7,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="58c40ad1-861f-47b7-8118-ed916278af16" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/data/InventoryContract.java" afterPath="$PROJECT_DIR$/app/src/main/java/data/InventoryContract.java" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/data/InventoryProvider.java" afterPath="$PROJECT_DIR$/app/src/main/java/data/InventoryProvider.java" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -93,8 +92,8 @@
       <file leaf-file-name="InventoryProvider.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/data/InventoryProvider.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1557">
-              <caret line="271" column="30" lean-forward="false" selection-start-line="271" selection-start-column="30" selection-end-line="271" selection-end-column="30" />
+            <state relative-caret-position="446">
+              <caret line="207" column="78" lean-forward="false" selection-start-line="207" selection-start-column="78" selection-end-line="207" selection-end-column="78" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -2696,8 +2695,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/data/InventoryProvider.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1557">
-          <caret line="271" column="30" lean-forward="false" selection-start-line="271" selection-start-column="30" selection-end-line="271" selection-end-column="30" />
+        <state relative-caret-position="446">
+          <caret line="207" column="78" lean-forward="false" selection-start-line="207" selection-start-column="78" selection-end-line="207" selection-end-column="78" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

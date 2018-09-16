@@ -169,7 +169,7 @@ public class InventoryProvider extends ContentProvider {
             throw new IllegalArgumentException("A valid quantity is required");
         }
 
-        // Get writeable database
+        // Get writable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         // Insert the new item with the given values
@@ -188,8 +188,37 @@ public class InventoryProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        return 0;
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        // Get writable database
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        // Track the number of rows that were deleted
+        int rowsDeleted;
+
+        final int match = sUriMatcher.match(uri);
+        switch (match) {
+            case ITEM:
+                // Delete all rows that match the selection and selection args
+                rowsDeleted = database.delete(InventoryContract.InventoryEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            case ITEM_ID:
+                // Delete a single row given by the ID in the URI
+                selection = InventoryContract.InventoryEntry._ID + "=?";
+                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                rowsDeleted = database.delete(InventoryContract.InventoryEntry.TABLE_NAME, selection, selectionArgs);
+                break;
+            default:
+                throw new IllegalArgumentException("Deletion is not supported for " + uri);
+        }
+
+        // If 1 or more rows were deleted, then notify all listeners that the data at the
+        // given URI has changed
+        if (rowsDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+
+        // Return the number of rows deleted
+        return rowsDeleted;
     }
 
     @Override
@@ -200,7 +229,7 @@ public class InventoryProvider extends ContentProvider {
             case ITEM:
                 return updateItem(uri, contentValues, selection, selectionArgs);
             case ITEM_ID:
-                // For the PET_ID code, extract out the ID from the URI,
+                // For the ITEM_ID code, extract out the ID from the URI,
                 // so we know which row to update. Selection will be "_id=?" and selection
                 // arguments will be a String array containing the actual ID.
                 selection = InventoryContract.InventoryEntry._ID + "=?";
@@ -212,12 +241,12 @@ public class InventoryProvider extends ContentProvider {
     }
 
     /**
-     * Update pets in the database with the given content values. Apply the changes to the rows
-     * specified in the selection and selection arguments (which could be 0 or 1 or more pets).
+     * Update items in the database with the given content values. Apply the changes to the rows
+     * specified in the selection and selection arguments (which could be 0 or 1 or more items).
      * Return the number of rows that were successfully updated.
      */
     private int updateItem(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        // If the {@link PetEntry#COLUMN_PET_NAME} key is present,
+        // If the {@link ItemEntry#COLUMN_PRODUCT_NAME} key is present,
         // check that the name value is not null.
         if (values.containsKey(InventoryContract.InventoryEntry.COLUMN_PRODUCT_NAME)) {
             String name = values.getAsString(InventoryContract.InventoryEntry.COLUMN_PRODUCT_NAME);
@@ -226,27 +255,28 @@ public class InventoryProvider extends ContentProvider {
             }
         }
 
-        // If the {@link PetEntry#COLUMN_PET_GENDER} key is present,
-        // check that the gender value is valid.
+        // If the {@link ITEMEntry#COLUMN_QUANTITY} key is present,
+        // check that the quantity value is valid.
         if (values.containsKey(InventoryContract.InventoryEntry.COLUMN_QUANTITY)) {
             Integer quantity = values.getAsInteger(InventoryContract.InventoryEntry.COLUMN_QUANTITY);
+            // Check that the quantity is greater than 0
             if (quantity == null && quantity < 0) {
                 throw new IllegalArgumentException("Item requires valid quantity");
             }
         }
 
-        // If the {@link PetEntry#COLUMN_PET_WEIGHT} key is present,
-        // check that the weight value is valid.
+        // If the {@link ItemEntry#COLUMN_PRICE} key is present,
+        // check that the price value is valid.
         if (values.containsKey(InventoryContract.InventoryEntry.COLUMN_PRICE)) {
-            // Check that the weight is greater than or equal to 0 kg
+            // Check that the price is greater than or equal to 0
             Integer weight = values.getAsInteger(InventoryContract.InventoryEntry.COLUMN_PRICE);
             if (weight != null && weight < 0) {
                 throw new IllegalArgumentException("Item requires valid price");
             }
         }
 
-        // If the {@link PetEntry#COLUMN_PET_NAME} key is present,
-        // check that the name value is not null.
+        // If the {@link ItemEntry#COLUMN_SUPPLIER} key is present,
+        // check that the supplier name value is not null.
         if (values.containsKey(InventoryContract.InventoryEntry.COLUMN_SUPPLIER)) {
             String name = values.getAsString(InventoryContract.InventoryEntry.COLUMN_SUPPLIER);
             if (name == null) {
@@ -254,8 +284,8 @@ public class InventoryProvider extends ContentProvider {
             }
         }
 
-        // If the {@link PetEntry#COLUMN_PET_NAME} key is present,
-        // check that the name value is not null.
+        // If the {@link ItemEntry#COLUMN_SUPPLIER_NUMBER} key is present,
+        // check that the phone number value is not null.
         if (values.containsKey(InventoryContract.InventoryEntry.COLUMN_SUPPLIER_NUMBER)) {
             String name = values.getAsString(InventoryContract.InventoryEntry.COLUMN_SUPPLIER_NUMBER);
             if (name == null) {
