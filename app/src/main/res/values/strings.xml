@@ -7,4 +7,35 @@
     <string name="category_supplier_info">Supplier Info</string>
     <string name="hint_supplier_name">Supplier Name</string>
     <string name="hint_supplier_phone">Supplier Phone #</string>
+    <string name="action_insert_dummy_data">Insert Dummy Data</string>
+    <string name="action_delete_all_entries">Delete All Items</string>
+    <string name="editor_activity_title_new_item">Add a item</string>
+    <string name="editor_activity_title_edit_item">Edit item</string>
+    <string name="editor_insert_item_failed">Error saving item</string>
+    <string name="editor_insert_item_successful">Saved item successfully</string>
+    <string name="editor_update_item_failed">Item update failed</string>
+    <string name="editor_update_item_successful">Updated item successful</string>
+
+    <!-- Dialog message when user is leaving editor but hasn't saved changes [CHAR LIMIT=NONE] -->
+    <string name="unsaved_changes_dialog_msg">Discard your changes and quit editing?</string>
+
+    <!-- Dialog button text for the option to discard a user's changes [CHAR LIMIT=20] -->
+    <string name="discard">Discard</string>
+
+    <!-- Dialog button text for the option to keep editing the current pet [CHAR LIMIT=20] -->
+    <string name="keep_editing">Keep Editing</string>
+
+    <!-- Dialog message to ask the user to confirm deleting the current pet [CHAR LIMIT=NONE] -->
+    <string name="delete_dialog_msg">Delete this pet?</string>
+
+    <!-- Dialog button text for the option to confirm deleting the current pet [CHAR LIMIT=20] -->
+    <string name="delete">Delete</string>
+
+    <!-- Dialog button text for the option to cancel deletion of the current pet [CHAR LIMIT=20] -->
+    <string name="cancel">Cancel</string>
+    <string name="editor_delete_item_failed">Error with deleting item</string>
+    <string name="editor_delete_item_successful">Item deleted</string>
+    <string name="empty_view_title_text">There are no items to display</string>
+    <string name="empty_view_subtitle_text">Get started by adding an item</string>
+
 </resources>

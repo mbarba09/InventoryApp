@@ -159,7 +159,7 @@ public class InventoryProvider extends ContentProvider {
 
         // Check that the price is greater or equal to $0
         Integer price = values.getAsInteger(InventoryContract.InventoryEntry.COLUMN_PRICE);
-        if (price != null || price < 0) {
+        if (price == null || price < 0) {
             throw new IllegalArgumentException("A valid price is required");
         }
 
