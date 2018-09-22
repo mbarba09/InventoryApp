@@ -13,14 +13,19 @@ import android.util.Log;
 
 public class InventoryProvider extends ContentProvider {
 
-    /** Tag for the log messages */
+    /**
+     * Tag for the log messages
+     */
     public static final String LOG_TAG = InventoryProvider.class.getSimpleName();
 
-
-    /** URI matcher code for the content URI for the pets table */
+    /**
+     * URI matcher code for the content URI for the items table
+     */
     private static final int ITEM = 100;
 
-    /** URI matcher code for the content URI for a single pet in the pets table */
+    /**
+     * URI matcher code for the content URI for a single item in the items table
+     */
     private static final int ITEM_ID = 101;
 
     /**
@@ -51,7 +56,9 @@ public class InventoryProvider extends ContentProvider {
         sUriMatcher.addURI(InventoryContract.CONTENT_AUTHORITY, InventoryContract.PATH_ITEMS + "/#", ITEM_ID);
     }
 
-    /** Database helper object */
+    /**
+     * Database helper object
+     */
     private InventoryDbHelper mDbHelper;
 
     @Override
@@ -73,9 +80,9 @@ public class InventoryProvider extends ContentProvider {
         int match = sUriMatcher.match(uri);
         switch (match) {
             case ITEM:
-                // For the ITEM code, query the pets table directly with the given
+                // For the ITEM code, query the items table directly with the given
                 // projection, selection, selection arguments, and sort order. The cursor
-                // could contain multiple rows of the pets table.
+                // could contain multiple rows of the items table.
                 cursor = database.query(InventoryContract.InventoryEntry.TABLE_NAME, projection, selection, selectionArgs,
                         null, null, sortOrder);
                 break;
@@ -89,7 +96,7 @@ public class InventoryProvider extends ContentProvider {
                 // arguments that will fill in the "?". Since we have 1 question mark in the
                 // selection, we have 1 String in the selection arguments' String array.
                 selection = InventoryContract.InventoryEntry._ID + "=?";
-                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
 
                 // This will perform a query on the inventory table where the _id equals 3 to return a
                 // Cursor containing that row of the table.
@@ -135,7 +142,7 @@ public class InventoryProvider extends ContentProvider {
     }
 
     /**
-     * Insert a pet into the database with the given content values. Return the new content URI
+     * Insert a item into the database with the given content values. Return the new content URI
      * for that specific row in the database.
      */
     private Uri insertItem(Uri uri, ContentValues values) {
@@ -204,7 +211,7 @@ public class InventoryProvider extends ContentProvider {
             case ITEM_ID:
                 // Delete a single row given by the ID in the URI
                 selection = InventoryContract.InventoryEntry._ID + "=?";
-                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 rowsDeleted = database.delete(InventoryContract.InventoryEntry.TABLE_NAME, selection, selectionArgs);
                 break;
             default:
@@ -233,7 +240,7 @@ public class InventoryProvider extends ContentProvider {
                 // so we know which row to update. Selection will be "_id=?" and selection
                 // arguments will be a String array containing the actual ID.
                 selection = InventoryContract.InventoryEntry._ID + "=?";
-                selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+                selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 return updateItem(uri, contentValues, selection, selectionArgs);
             default:
                 throw new IllegalArgumentException("Update is not supported for " + uri);

@@ -39,13 +39,32 @@
                 android:hint="@string/hint_price"
                 android:inputType="number" />
 
-            <EditText
-                android:id="@+id/edit_quantity"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/hint_quantity"
-                android:inputType="number" />
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
+                <EditText
+                    android:id="@+id/edit_quantity"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:hint="@string/hint_quantity"
+                    android:inputType="number" />
+
+                <Button
+                    android:id="@+id/edit_add"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@mipmap/add" />
+
+                <Button
+                    android:id="@+id/edit_minus"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:background="@mipmap/minus" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
@@ -86,9 +105,19 @@
                 android:hint="@string/hint_supplier_phone"
                 android:inputType="phone" />
 
-
         </LinearLayout>
 
     </LinearLayout>
+
+    <Button
+        android:id="@+id/edit_call_supplier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_margin="16dp"
+        android:background="@color/colorPrimary"
+        android:padding="8dp"
+        android:text="@string/button_call_supplier"
+        android:textColor="@android:color/white" />
 
 </LinearLayout>

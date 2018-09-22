@@ -11,15 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CursorAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import data.InventoryContract;
 
 import static data.InventoryProvider.LOG_TAG;
 
-public class InventoryCursorAdapter extends CursorAdapter{
+public class InventoryCursorAdapter extends CursorAdapter {
 
     /**
      * Constructs a new {@link InventoryCursorAdapter}.
@@ -27,7 +25,7 @@ public class InventoryCursorAdapter extends CursorAdapter{
      * @param context The context
      * @param c       The cursor from which to get the data.
      */
-    public InventoryCursorAdapter(Context context, Cursor c) {
+    InventoryCursorAdapter(Context context, Cursor c) {
         super(context, c, 0);
     }
 
@@ -59,9 +57,9 @@ public class InventoryCursorAdapter extends CursorAdapter{
     public void bindView(View view, final Context context, Cursor cursor) {
 
         // Find the individual views that we want to modify in the list item layout
-        TextView productNameTextView = (TextView) view.findViewById(R.id.list_product_name);
-        TextView priceTextView = (TextView) view.findViewById(R.id.list_price);
-        final TextView quantityTextView = (TextView) view.findViewById(R.id.list_quantity);
+        TextView productNameTextView = view.findViewById(R.id.list_product_name);
+        TextView priceTextView = view.findViewById(R.id.list_price);
+        final TextView quantityTextView = view.findViewById(R.id.list_quantity);
 
         // Find the columns of the item details that we are interested in
         int productIdColumnIndex = cursor.getColumnIndex(InventoryContract.InventoryEntry._ID);
@@ -70,7 +68,7 @@ public class InventoryCursorAdapter extends CursorAdapter{
         int quantityColumnIndex = cursor.getColumnIndex(InventoryContract.InventoryEntry.COLUMN_QUANTITY);
 
         // Read the item details from the Cursor for the current item
-        final long id = cursor.getLong(priceColumnIndex);
+        final long id = cursor.getLong(productIdColumnIndex);
         final String productName = cursor.getString(productNameColumnIndex);
         final String price = cursor.getString(priceColumnIndex);
         final String quantity = cursor.getString(quantityColumnIndex);
@@ -80,8 +78,8 @@ public class InventoryCursorAdapter extends CursorAdapter{
         priceTextView.setText(price);
         quantityTextView.setText(quantity);
 
-        Button button = (Button) view.findViewById(R.id.list_sale_button);
-        button.setOnClickListener(new View.OnClickListener()    {
+        Button button = view.findViewById(R.id.list_sale_button);
+        button.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
@@ -92,17 +90,14 @@ public class InventoryCursorAdapter extends CursorAdapter{
                 values.put(InventoryContract.InventoryEntry.COLUMN_PRICE, price);
 
 
-                if(Integer.valueOf(quantity) > 0){
+                if (Integer.valueOf(quantity) > 0) {
                     values.put(InventoryContract.InventoryEntry.COLUMN_QUANTITY, Integer.valueOf(quantity) - 1);
-                    Log.v(LOG_TAG, "success!");
+                    Log.v(LOG_TAG, context.getString(R.string.adapter_item_sale));
                     context.getContentResolver().update(currentInventoryUri, values, null, null);
-                    quantityTextView.setText(quantity);
 
                 }
 
             }
         });
-
     }
-
 }

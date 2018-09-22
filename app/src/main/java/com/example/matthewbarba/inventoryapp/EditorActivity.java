@@ -1,7 +1,7 @@
 package com.example.matthewbarba.inventoryapp;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.ContentValues;
 import android.content.CursorLoader;
@@ -18,13 +18,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.Toast;
 
-import data.InventoryDbHelper;
 import data.InventoryContract.InventoryEntry;
 
 
@@ -32,7 +29,7 @@ import data.InventoryContract.InventoryEntry;
  * Allows user to create a new inventory item or edit an existing one.
  */
 public class EditorActivity extends AppCompatActivity implements
-                LoaderCallbacks<Cursor> {
+        LoaderCallbacks<Cursor> {
 
     /**
      * Identifier for the pet data loader
@@ -74,6 +71,21 @@ public class EditorActivity extends AppCompatActivity implements
      */
     private boolean mItemHasChanged = false;
 
+    /**
+     * Button to add 1 to the quantity of the product in the inventory
+     */
+    private Button mAddQuantity;
+
+    /**
+     * Button to minus 1 to the quantity of the product in the inventory
+     */
+    private Button mMinusQuantity;
+
+    /**
+     * Button to call the supplier for the current item
+     */
+    private Button mCallSupplier;
+
 
     /**
      * OnTouchListener that listens for any user touches on a View, implying that they are modifying
@@ -87,6 +99,7 @@ public class EditorActivity extends AppCompatActivity implements
         }
     };
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,6 +133,9 @@ public class EditorActivity extends AppCompatActivity implements
         mSupplierPhoneNumberEditText = findViewById(R.id.edit_supplier_phone);
         mProductPriceEditText = findViewById(R.id.edit_price);
         mQuantityEditText = findViewById(R.id.edit_quantity);
+        mCallSupplier = findViewById(R.id.edit_call_supplier);
+        mAddQuantity = findViewById(R.id.edit_add);
+        mMinusQuantity = findViewById(R.id.edit_minus);
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
@@ -129,10 +145,70 @@ public class EditorActivity extends AppCompatActivity implements
         mSupplierPhoneNumberEditText.setOnTouchListener(mTouchListener);
         mProductPriceEditText.setOnTouchListener(mTouchListener);
         mQuantityEditText.setOnTouchListener(mTouchListener);
+        mAddQuantity.setOnTouchListener(mTouchListener);
+        mMinusQuantity.setOnTouchListener(mTouchListener);
+        mCallSupplier.setOnTouchListener(mTouchListener);
+
+        mAddQuantity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // find the string from the edit text field for quantity
+                String quantityString = mQuantityEditText.getText().toString().trim();
+
+                ContentValues values = new ContentValues();
+
+                // If the value of the quantity string is greater than 0, add 1 to the quantity
+                if (Integer.valueOf(quantityString) > 0) {
+
+                    // add 1 to the value of the quantity for the item
+                    values.put(InventoryEntry.COLUMN_QUANTITY, Integer.valueOf(quantityString) + 1);
+
+                    // return the updated value
+                    getContentResolver().update(mCurrentItemUri, values, null, null);
+                    mQuantityEditText.setText(quantityString);
+                }
+            }
+        });
+
+        mMinusQuantity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // find the string from the edit text field for quantity
+                String quantityString = mQuantityEditText.getText().toString().trim();
+
+                ContentValues values = new ContentValues();
+
+                // If the value of the quantity string is greater than 0, add 1 to the quantity
+                if (Integer.valueOf(quantityString) > 0) {
+
+                    // minus 1 to the value of the quantity for the item
+                    values.put(InventoryEntry.COLUMN_QUANTITY, Integer.valueOf(quantityString) - 1);
+
+                    // return the updated value
+                    getContentResolver().update(mCurrentItemUri, values, null, null);
+                    mQuantityEditText.setText(quantityString);
+                }
+            }
+        });
+
+        mCallSupplier.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // find the string that is associated with the supplier's phone number
+                String supplierPhoneNumberString = mSupplierPhoneNumberEditText.getText().toString().trim();
+
+                // Create an intent to call the supplier's phone number
+                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + supplierPhoneNumberString));
+                startActivity(intent);
+
+            }
+        });
     }
 
     /**
-     * Get user input from editor and save pet into database.
+     * Get user input from editor and save item into database.
      */
     private void saveItem() {
         // Read from input fields
@@ -143,19 +219,19 @@ public class EditorActivity extends AppCompatActivity implements
         String supplierString = mSupplierNameEditText.getText().toString().trim();
         String supplierPhoneNumberString = mSupplierPhoneNumberEditText.getText().toString().trim();
 
-        // Check if this is supposed to be a new pet
+        // Check if this is supposed to be a new item
         // and check if all the fields in the editor are blank
         if (mCurrentItemUri == null &&
                 TextUtils.isEmpty(nameString) && TextUtils.isEmpty(quantityString) &&
                 TextUtils.isEmpty(priceString) && TextUtils.isEmpty(supplierString)
                 && TextUtils.isEmpty(supplierPhoneNumberString)) {
-            // Since no fields were modified, we can return early without creating a new pet.
+            // Since no fields were modified, we can return early without creating a new item.
             // No need to create ContentValues and no need to do any ContentProvider operations.
             return;
         }
 
         // Create a ContentValues object where column names are the keys,
-        // and pet attributes from the editor are the values.
+        // and item attributes from the editor are the values.
         ContentValues values = new ContentValues();
         values.put(InventoryEntry.COLUMN_PRODUCT_NAME, nameString);
         values.put(InventoryEntry.COLUMN_SUPPLIER, supplierString);
@@ -171,12 +247,12 @@ public class EditorActivity extends AppCompatActivity implements
         if (!TextUtils.isEmpty(priceString)) {
             price = Integer.parseInt(priceString);
         }
-        values.put(InventoryEntry.COLUMN_PRICE, priceString);
+        values.put(InventoryEntry.COLUMN_PRICE, price);
 
-        // Determine if this is a new or existing pet by checking if mCurrentPetUri is null or not
+        // Determine if this is a new or existing item by checking if mCurrentItemUri is null or not
         if (mCurrentItemUri == null) {
-            // This is a NEW pet, so insert a new pet into the provider,
-            // returning the content URI for the new pet.
+            // This is a NEW item, so insert a new item into the provider,
+            // returning the content URI for the new item.
             Uri newUri = getContentResolver().insert(InventoryEntry.CONTENT_URI, values);
 
             // Show a toast message depending on whether or not the insertion was successful.
@@ -190,9 +266,9 @@ public class EditorActivity extends AppCompatActivity implements
                         Toast.LENGTH_SHORT).show();
             }
         } else {
-            // Otherwise this is an EXISTING pet, so update the pet with content URI: mCurrentPetUri
+            // Otherwise this is an EXISTING item, so update the item with content URI: mCurrentItemUri
             // and pass in the new ContentValues. Pass in null for the selection and selection args
-            // because mCurrentPetUri will already identify the correct row in the database that
+            // because mCurrentItemUri will already identify the correct row in the database that
             // we want to modify.
             int rowsAffected = getContentResolver().update(mCurrentItemUri, values, null, null);
 
@@ -209,7 +285,6 @@ public class EditorActivity extends AppCompatActivity implements
         }
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu options from the res/menu/menu_editor.xml file.
@@ -225,7 +300,7 @@ public class EditorActivity extends AppCompatActivity implements
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        // If this is a new pet, hide the "Delete" menu item.
+        // If this is a new item, hide the "Delete" menu item.
         if (mCurrentItemUri == null) {
             MenuItem menuItem = menu.findItem(R.id.action_delete);
             menuItem.setVisible(false);
@@ -233,14 +308,13 @@ public class EditorActivity extends AppCompatActivity implements
         return true;
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // User clicked on a menu option in the app bar overflow menu
         switch (item.getItemId()) {
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
-                // Save pet to database
+                // Save item to database
                 saveItem();
                 // Exit activity
                 finish();
@@ -252,7 +326,7 @@ public class EditorActivity extends AppCompatActivity implements
                 return true;
             // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
-                // If the pet hasn't changed, continue with navigating up to parent activity
+                // If the item hasn't changed, continue with navigating up to parent activity
                 // which is the {@link CatalogActivity}.
                 if (!mItemHasChanged) {
                     NavUtils.navigateUpFromSameTask(EditorActivity.this);
@@ -283,7 +357,7 @@ public class EditorActivity extends AppCompatActivity implements
      */
     @Override
     public void onBackPressed() {
-        // If the pet hasn't changed, continue with handling back button press
+        // If the item hasn't changed, continue with handling back button press
         if (!mItemHasChanged) {
             super.onBackPressed();
             return;
@@ -304,12 +378,11 @@ public class EditorActivity extends AppCompatActivity implements
         showUnsavedChangesDialog(discardButtonClickListener);
     }
 
-
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
 
-        // Since the editor shows all pet attributes, define a projection that contains
-        // all columns from the pet table
+        // Since the editor shows all item attributes, define a projection that contains
+        // all columns from the item table
         String[] projection = {
                 InventoryEntry._ID,
                 InventoryEntry.COLUMN_PRODUCT_NAME,
@@ -320,7 +393,7 @@ public class EditorActivity extends AppCompatActivity implements
 
         // This loader will execute the ContentProvider's query method on a background thread
         return new CursorLoader(this,   // Parent activity context
-                mCurrentItemUri,         // Query the content URI for the current pet
+                mCurrentItemUri,         // Query the content URI for the current item
                 projection,             // Columns to include in the resulting Cursor
                 null,                   // No selection clause
                 null,                   // No selection arguments
@@ -338,7 +411,7 @@ public class EditorActivity extends AppCompatActivity implements
         // Proceed with moving to the first row of the cursor and reading data from it
         // (This should be the only row in the cursor)
         if (cursor.moveToFirst()) {
-            // Find the columns of pet attributes that we're interested in
+            // Find the columns of item attributes that we're interested in
             int nameColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_PRODUCT_NAME);
             int priceColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_PRICE);
             int quantityColumnIndex = cursor.getColumnIndex(InventoryEntry.COLUMN_QUANTITY);
@@ -382,14 +455,14 @@ public class EditorActivity extends AppCompatActivity implements
     private void showUnsavedChangesDialog(
             DialogInterface.OnClickListener discardButtonClickListener) {
         // Create an AlertDialog.Builder and set the message, and click listeners
-        // for the postivie and negative buttons on the dialog.
+        // for the positive and negative buttons on the dialog.
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.unsaved_changes_dialog_msg);
         builder.setPositiveButton(R.string.discard, discardButtonClickListener);
         builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Keep editing" button, so dismiss the dialog
-                // and continue editing the pet.
+                // and continue editing the item.
                 if (dialog != null) {
                     dialog.dismiss();
                 }
@@ -402,7 +475,7 @@ public class EditorActivity extends AppCompatActivity implements
     }
 
     /**
-     * Prompt the user to confirm that they want to delete this pet.
+     * Prompt the user to confirm that they want to delete this item.
      */
     private void showDeleteConfirmationDialog() {
         // Create an AlertDialog.Builder and set the message, and click listeners
@@ -411,14 +484,14 @@ public class EditorActivity extends AppCompatActivity implements
         builder.setMessage(R.string.delete_dialog_msg);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Delete" button, so delete the pet.
-                deletePet();
+                // User clicked the "Delete" button, so delete the item.
+                deleteItem();
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Cancel" button, so dismiss the dialog
-                // and continue editing the pet.
+                // and continue editing the item.
                 if (dialog != null) {
                     dialog.dismiss();
                 }
@@ -431,14 +504,14 @@ public class EditorActivity extends AppCompatActivity implements
     }
 
     /**
-     * Perform the deletion of the pet in the database.
+     * Perform the deletion of the item in the database.
      */
-    private void deletePet() {
-        // Only perform the delete if this is an existing pet.
+    private void deleteItem() {
+        // Only perform the delete if this is an existing item.
         if (mCurrentItemUri != null) {
-            // Call the ContentResolver to delete the pet at the given content URI.
-            // Pass in null for the selection and selection args because the mCurrentPetUri
-            // content URI already identifies the pet that we want.
+            // Call the ContentResolver to delete the item at the given content URI.
+            // Pass in null for the selection and selection args because the mCurrentItemUri
+            // content URI already identifies the item that we want.
             int rowsDeleted = getContentResolver().delete(mCurrentItemUri, null, null);
 
             // Show a toast message depending on whether or not the delete was successful.
@@ -456,5 +529,4 @@ public class EditorActivity extends AppCompatActivity implements
         // Close the activity
         finish();
     }
-
 }

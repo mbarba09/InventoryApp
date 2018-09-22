@@ -16,23 +16,21 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import data.InventoryContract.InventoryEntry;
 
-public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    /** Identifier for the pet data loader */
+    /**
+     * Identifier for the item data loader
+     */
     private static final int ITEM_LOADER = 0;
 
-    /** Adapter for the ListView */
+    /**
+     * Adapter for the ListView
+     */
     InventoryCursorAdapter mCursorAdapter;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,15 +47,12 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
             }
         });
 
-
         // Find the ListView which will be populated with the item data
-        ListView itemListView = (ListView) findViewById(R.id.list);
-        RelativeLayout button = findViewById(R.id.list_sale_button);
+        ListView itemListView = findViewById(R.id.list);
 
         // Find and set empty view on the ListView, so that it only shows when the list has 0 items.
         View emptyView = findViewById(R.id.empty_view);
         itemListView.setEmptyView(emptyView);
-
 
         // Setup an Adapter to create a list item for each row of item data in the Cursor.
         // There is no inventory data yet (until the loader finishes) so pass in null for the Cursor.
@@ -69,21 +64,20 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
 
-
                 // Create new intent to go to {@link EditorActivity}
                 Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
 
-                // Form the content URI that represents the specific pet that was clicked on,
+                // Form the content URI that represents the specific item that was clicked on,
                 // by appending the "id" (passed as input to this method) onto the
                 // {@link InventoryEntry#CONTENT_URI}.
                 // For example, the URI would be "content://com.example.matthewbarba.inventoryapp/inventoryapp/2"
-                // if the pet with ID 2 was clicked on.
+                // if the item with ID 2 was clicked on.
                 Uri currentItemUri = ContentUris.withAppendedId(InventoryEntry.CONTENT_URI, id);
 
                 // Set the URI on the data field of the intent
                 intent.setData(currentItemUri);
 
-                // Launch the {@link EditorActivity} to display the data for the current pet.
+                // Launch the {@link EditorActivity} to display the data for the current item.
                 startActivity(intent);
             }
 
@@ -95,7 +89,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
     }
 
     /**
-     * Helper method to insert hardcoded pet data into the database. For debugging purposes only.
+     * Helper method to insert hardcoded item data into the database. For debugging purposes only.
      */
     private void insertItem() {
         // Create a ContentValues object where column names are the keys,
@@ -116,13 +110,12 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
 
     /**
-     * Helper method to delete all pets in the database.
+     * Helper method to delete all items in the database.
      */
     private void deleteAllItems() {
         int rowsDeleted = getContentResolver().delete(InventoryEntry.CONTENT_URI, null, null);
         Log.v("CatalogActivity", rowsDeleted + " rows deleted from inventory database");
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -173,7 +166,6 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
         // Update {@link InventoryCursorAdapter} with this new cursor containing updated item data
         mCursorAdapter.swapCursor(data);
-
     }
 
     @Override
