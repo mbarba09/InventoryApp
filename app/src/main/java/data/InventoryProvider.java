@@ -183,7 +183,6 @@ public class InventoryProvider extends ContentProvider {
         long id = database.insert(InventoryContract.InventoryEntry.TABLE_NAME, null, values);
         // If the ID is -1, then the insertion failed. Log an error and return null.
         if (id == -1) {
-            Log.e(LOG_TAG, "Failed to insert row for " + uri);
             return null;
         }
 

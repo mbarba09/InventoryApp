@@ -32,7 +32,6 @@ public class InventoryDbHelper extends SQLiteOpenHelper {
                 + InventoryEntry.COLUMN_SUPPLIER + " TEXT NOT NULL, "
                 + InventoryEntry.COLUMN_SUPPLIER_NUMBER + " TEXT NOT NULL); ";
         db.execSQL(SQL_CREATE_INVENTORY_TABLE);
-        Log.v(LOG_TAG, SQL_CREATE_INVENTORY_TABLE);
     }
 
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

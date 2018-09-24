@@ -156,18 +156,18 @@ public class EditorActivity extends AppCompatActivity implements
                 // find the string from the edit text field for quantity
                 String quantityString = mQuantityEditText.getText().toString().trim();
 
-                ContentValues values = new ContentValues();
+                // Convert the quantityString to an Integer to we can add 1 to the value
+                int quantity = Integer.parseInt(quantityString);
 
-                // If the value of the quantity string is greater than 0, add 1 to the quantity
-                if (Integer.valueOf(quantityString) > 0) {
+                quantity = quantity + 1;
 
-                    // add 1 to the value of the quantity for the item
-                    values.put(InventoryEntry.COLUMN_QUANTITY, Integer.valueOf(quantityString) + 1);
+                // Convert the quantity integer back to a string so we can display
+                // the value in the editText field
+                String quantityStringUpdate = String.valueOf(quantity);
 
-                    // return the updated value
-                    getContentResolver().update(mCurrentItemUri, values, null, null);
-                    mQuantityEditText.setText(quantityString);
-                }
+                mQuantityEditText.setText(quantityStringUpdate);
+
+
             }
         });
 
@@ -177,18 +177,20 @@ public class EditorActivity extends AppCompatActivity implements
                 // find the string from the edit text field for quantity
                 String quantityString = mQuantityEditText.getText().toString().trim();
 
-                ContentValues values = new ContentValues();
+                // Convert the quantityString to an Integer to we can add 1 to the value
+                int quantity = Integer.parseInt(quantityString);
 
-                // If the value of the quantity string is greater than 0, add 1 to the quantity
-                if (Integer.valueOf(quantityString) > 0) {
-
-                    // minus 1 to the value of the quantity for the item
-                    values.put(InventoryEntry.COLUMN_QUANTITY, Integer.valueOf(quantityString) - 1);
-
-                    // return the updated value
-                    getContentResolver().update(mCurrentItemUri, values, null, null);
-                    mQuantityEditText.setText(quantityString);
+                if (quantity > 0)   {
+                    quantity = quantity - 1;
+                } else {
+                    Toast.makeText(getBaseContext(), "You cannot have less than 0 items!", Toast.LENGTH_LONG).show();
                 }
+
+                String quantityStringUpdate = String.valueOf(quantity);
+
+                mQuantityEditText.setText(quantityStringUpdate);
+
+
             }
         });
 
@@ -201,8 +203,12 @@ public class EditorActivity extends AppCompatActivity implements
 
                 // Create an intent to call the supplier's phone number
                 Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + supplierPhoneNumberString));
-                startActivity(intent);
 
+                if (intent.resolveActivity(getPackageManager()) != null) {
+
+                    startActivity(intent); //where intent is your intent
+
+                }
             }
         });
     }
@@ -222,9 +228,27 @@ public class EditorActivity extends AppCompatActivity implements
         // Check if this is supposed to be a new item
         // and check if all the fields in the editor are blank
         if (mCurrentItemUri == null &&
-                TextUtils.isEmpty(nameString) && TextUtils.isEmpty(quantityString) &&
-                TextUtils.isEmpty(priceString) && TextUtils.isEmpty(supplierString)
-                && TextUtils.isEmpty(supplierPhoneNumberString)) {
+                TextUtils.isEmpty(nameString) ||
+                TextUtils.isEmpty(quantityString) ||
+                TextUtils.isEmpty(priceString) ||
+                TextUtils.isEmpty(supplierString) ||
+                TextUtils.isEmpty(supplierPhoneNumberString)) {
+
+            // Show Toast to user to fix errors
+            if (nameString.isEmpty())   {
+                Toast.makeText(this, "A product name is required", Toast.LENGTH_LONG).show();
+            } else if (quantityString.isEmpty())    {
+                Toast.makeText(this, "A valid quantity is required (hint: 0 or greater)", Toast.LENGTH_LONG).show();
+            } else if (priceString.isEmpty())   {
+                Toast.makeText(this, "A valid price is required (hint: The price must be greater than or equal to 1)", Toast.LENGTH_LONG).show();
+            } else if (supplierString.isEmpty())    {
+                Toast.makeText(this, "A supplier name is required", Toast.LENGTH_LONG).show();
+            } else if (supplierPhoneNumberString.isEmpty()) {
+                Toast.makeText(this, "A supplier phone number is required", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "There is an error saving this item. Fill out all fields to save the item properly", Toast.LENGTH_LONG).show();
+            }
+
             // Since no fields were modified, we can return early without creating a new item.
             // No need to create ContentValues and no need to do any ContentProvider operations.
             return;
@@ -479,7 +503,7 @@ public class EditorActivity extends AppCompatActivity implements
      */
     private void showDeleteConfirmationDialog() {
         // Create an AlertDialog.Builder and set the message, and click listeners
-        // for the postivie and negative buttons on the dialog.
+        // for the positive and negative buttons on the dialog.
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.delete_dialog_msg);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {

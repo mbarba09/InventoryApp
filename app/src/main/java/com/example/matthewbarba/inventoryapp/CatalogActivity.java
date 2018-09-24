@@ -11,12 +11,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.design.widget.FloatingActionButton;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import data.InventoryContract.InventoryEntry;
 
@@ -114,7 +114,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
      */
     private void deleteAllItems() {
         int rowsDeleted = getContentResolver().delete(InventoryEntry.CONTENT_URI, null, null);
-        Log.v("CatalogActivity", rowsDeleted + " rows deleted from inventory database");
+        Toast.makeText(this, rowsDeleted + " rows deleted from inventory database", Toast.LENGTH_LONG).show();
     }
 
     @Override
